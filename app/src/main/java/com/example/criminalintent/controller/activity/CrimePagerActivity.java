@@ -15,6 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.criminalintent.R;
+import com.example.criminalintent.ZoomOutPageTransformer;
 import com.example.criminalintent.controller.fragment.CrimeDetailFragment;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeRepository;
@@ -53,6 +54,7 @@ public class CrimePagerActivity extends AppCompatActivity {
 
     private void findViews() {
         mViewPagerCrimes = findViewById(R.id.view_pager_crimes);
+        mViewPagerCrimes.setPageTransformer(new ZoomOutPageTransformer());
     }
 
     private void initViews() {
