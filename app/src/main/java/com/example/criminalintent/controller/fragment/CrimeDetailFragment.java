@@ -34,6 +34,10 @@ public class CrimeDetailFragment extends Fragment {
     private EditText mEditTextTitle;
     private Button mButtonDate;
     private CheckBox mCheckBoxSolved;
+    private Button mButtonNext;
+    private Button mButtonLast;
+    private Button mButtonPrevious;
+    private Button mButtonFirst;
 
     private Crime mCrime;
     private IRepository mRepository;
@@ -72,15 +76,7 @@ public class CrimeDetailFragment extends Fragment {
         mCrime = mRepository.getCrime(crimeId);
     }
 
-    /**
-     * 1. Inflate the layout (or create layout in code)
-     * 2. find all views
-     * 3. logic for all views (like setListeners)
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
-     */
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -90,8 +86,8 @@ public class CrimeDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_crime_detail, container, false);
 
         findViews(view);
-        initViews();
         setListeners();
+        initViews();
 
         return view;
     }
@@ -150,6 +146,10 @@ public class CrimeDetailFragment extends Fragment {
         mEditTextTitle = view.findViewById(R.id.crime_title);
         mButtonDate = view.findViewById(R.id.crime_date);
         mCheckBoxSolved = view.findViewById(R.id.crime_solved);
+        mButtonFirst = view.findViewById(R.id.btn_first);
+        mButtonLast = view.findViewById(R.id.btn_last);
+        mButtonNext = view.findViewById(R.id.btn_next);
+        mButtonPrevious = view.findViewById(R.id.btn_previous);
     }
 
     private void initViews() {
@@ -192,9 +192,64 @@ public class CrimeDetailFragment extends Fragment {
 
             }
         });
+
+        //Buttons
+        mButtonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                next();
+                initViews();
+            }
+        });
+
+        mButtonPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                previous();
+                initViews();
+            }
+        });
+
+        mButtonFirst.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UUID btnId = mRepository.getCrimes().get(0).getId();
+                mCrime =  mRepository.getCrime(btnId);
+                initViews();
+            }
+        });
+
+        mButtonLast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UUID btnId = mRepository.getCrimes().get(mRepository.getCrimes().size()-1).getId();
+                mCrime =  mRepository.getCrime(btnId);
+                initViews();
+            }
+        });
     }
 
     private void updateCrime() {
         mRepository.updateCrime(mCrime);
+    }
+
+    private void next(){
+        for (int i = 0; i < mRepository.getCrimes().size() ; i++) {
+            if (mCrime.equals(mRepository.getCrimes().get(i))){
+                UUID btnId = mRepository.getCrimes().get(i+1).getId();
+                mCrime = mRepository.getCrime(btnId);
+                break;
+            }
+        }
+    }
+
+    private void previous(){
+        for (int i = 0; i < mRepository.getCrimes().size() ; i++) {
+            if (mCrime.equals(mRepository.getCrimes().get(i))){
+                UUID btnId = mRepository.getCrimes().get(i-1).getId();
+                mCrime = mRepository.getCrime(btnId);
+                break;
+            }
+        }
     }
 }
