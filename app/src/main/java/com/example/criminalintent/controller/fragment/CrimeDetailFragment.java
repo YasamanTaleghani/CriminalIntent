@@ -30,6 +30,9 @@ public class CrimeDetailFragment extends Fragment {
 
     public static final String TAG = "CDF";
     public static final String ARGS_CRIME_ID = "crimeId";
+    public static final String BUNDLE_TITLE = "com.example.criminalintent.Bundle_title";
+    public static final String BUNDLE_ISSOLVED = "com.example.criminalintent.Bundle_issolved";
+    public static final String BUNDLE_DATE = "com.example.criminalintent.Bundle_Date";
 
     private EditText mEditTextTitle;
     private Button mButtonDate;
@@ -86,9 +89,16 @@ public class CrimeDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_crime_detail, container, false);
 
         findViews(view);
+
+        if (savedInstanceState!=null){
+            mEditTextTitle.setText(savedInstanceState.getString(BUNDLE_TITLE));
+            mCheckBoxSolved.setChecked(savedInstanceState.getBoolean(BUNDLE_ISSOLVED));
+            mButtonDate.setText(savedInstanceState.getString(BUNDLE_DATE));
+            mButtonDate.setEnabled(false);
+        }
+
         setListeners();
         initViews();
-
         return view;
     }
 
@@ -275,5 +285,14 @@ public class CrimeDetailFragment extends Fragment {
         }
 
         return false;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_TITLE,mCrime.getTitle());
+        outState.putBoolean(BUNDLE_ISSOLVED,mCrime.isSolved());
+        outState.putString(BUNDLE_DATE,mCrime.getDate().toString());
+
     }
 }
