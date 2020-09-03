@@ -197,7 +197,9 @@ public class CrimeDetailFragment extends Fragment {
         mButtonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                next();
+                if(! checkNext()) {
+                   next();
+                }
                 initViews();
             }
         });
@@ -205,7 +207,9 @@ public class CrimeDetailFragment extends Fragment {
         mButtonPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                previous();
+                if (!checkPrevious()) {
+                    previous();
+                }
                 initViews();
             }
         });
@@ -251,5 +255,25 @@ public class CrimeDetailFragment extends Fragment {
                 break;
             }
         }
+    }
+
+    private boolean checkNext(){
+        if (mCrime.equals(mRepository.getCrimes().get(mRepository.getCrimes().size()-1))){
+            UUID btnId = mRepository.getCrimes().get(0).getId();
+            mCrime = mRepository.getCrime(btnId);
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean checkPrevious(){
+        if (mCrime.equals(mRepository.getCrimes().get(0))){
+            UUID btnId = mRepository.getCrimes().get(mRepository.getCrimes().size()-1).getId();
+            mCrime = mRepository.getCrime(btnId);
+            return true;
+        }
+
+        return false;
     }
 }
