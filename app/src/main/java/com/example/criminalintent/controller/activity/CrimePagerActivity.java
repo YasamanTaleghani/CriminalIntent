@@ -100,4 +100,6 @@ public class CrimePagerActivity extends AppCompatActivity {
             return mCrimes.size();
         }
     }
+
+
 }

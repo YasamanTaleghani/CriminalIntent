@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,8 +31,11 @@ public class CrimeListFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private CrimeAdapter mCrimeAdapter;
-
     private IRepository mRepository;
+    private ImageView mImageViewEmpty;
+    private TextView mTextViewEmpty;
+    private Button mButtonAddNewCrime;
+
 
     public static CrimeListFragment newInstance() {
 
@@ -61,6 +65,7 @@ public class CrimeListFragment extends Fragment {
 
         findViews(view);
         initViews();
+        setListeners();
 
         return view;
     }
@@ -74,6 +79,9 @@ public class CrimeListFragment extends Fragment {
 
     private void findViews(View view) {
         mRecyclerView = view.findViewById(R.id.recycler_view_crime_list);
+        mImageViewEmpty = view.findViewById(R.id.imageView_empty);
+        mTextViewEmpty = view.findViewById(R.id.textView_empty);
+        mButtonAddNewCrime = view.findViewById(R.id.btn_addCrime);
     }
 
     private void initViews() {
@@ -81,15 +89,40 @@ public class CrimeListFragment extends Fragment {
         updateUI();
     }
 
+    private void setListeners(){
+        mButtonAddNewCrime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Crime crime = new Crime();
+                mRepository.insertCrime(crime);
+                Intent intent = CrimeDetailActivity.newIntent(getContext(),crime.getId());
+                startActivity(intent);
+            }
+        });
+    }
+
     private void updateUI() {
         List<Crime> crimes = mRepository.getCrimes();
 
-        if (mCrimeAdapter == null) {
-            mCrimeAdapter = new CrimeAdapter(crimes);
-            mRecyclerView.setAdapter(mCrimeAdapter);
+        if (crimes.size()==0){
+            mImageViewEmpty.setVisibility(View.VISIBLE);
+            mTextViewEmpty.setVisibility(View.VISIBLE);
+            mButtonAddNewCrime.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.INVISIBLE);
         } else {
-            mCrimeAdapter.notifyDataSetChanged();
+            mImageViewEmpty.setVisibility(View.INVISIBLE);
+            mTextViewEmpty.setVisibility(View.INVISIBLE);
+            mButtonAddNewCrime.setVisibility(View.INVISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+
+            if (mCrimeAdapter == null) {
+                mCrimeAdapter = new CrimeAdapter(crimes);
+                mRecyclerView.setAdapter(mCrimeAdapter);
+            } else {
+                mCrimeAdapter.notifyDataSetChanged();
+            }
         }
+
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder {

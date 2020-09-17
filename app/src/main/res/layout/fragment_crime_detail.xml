@@ -27,6 +27,12 @@
         android:id="@+id/crime_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/crime_hour"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <CheckBox
         android:id="@+id/crime_solved"
         android:layout_width="match_parent"
@@ -43,28 +49,32 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="First" />
+            android:text="First"
+            android:textSize="12dp" />
 
         <Button
             android:id="@+id/btn_previous"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Previous" />
+            android:text="Previous"
+            android:textSize="12dp" />
 
         <Button
             android:id="@+id/btn_next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Next" />
+            android:text="Next"
+            android:textSize="12dp" />
 
         <Button
             android:id="@+id/btn_last"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Last" />
+            android:text="Last"
+            android:textSize="12dp" />
     </LinearLayout>
 
 
