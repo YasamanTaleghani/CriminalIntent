@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +41,7 @@ public class CrimeListFragment extends Fragment {
     private ImageView mImageViewEmpty;
     private TextView mTextViewEmpty;
     private Button mButtonAddNewCrime;
+    private String mStringSubtitle;
 
     public static CrimeListFragment newInstance() {
 
@@ -71,8 +73,16 @@ public class CrimeListFragment extends Fragment {
         findViews(view);
         initViews();
         setListeners();
+        setSubtitle();
 
         return view;
+    }
+
+    private void setSubtitle() {
+        Intent intent = getActivity().getIntent();
+        mStringSubtitle = intent.getStringExtra(LoginFragment.EXTRA_USERNAME_LIST);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.getSupportActionBar().setSubtitle(mStringSubtitle);
     }
 
     @Override
@@ -116,6 +126,7 @@ public class CrimeListFragment extends Fragment {
                 }
                 updateUI();
                 return true;
+
 
             default:
                 return super.onOptionsItemSelected(item);
