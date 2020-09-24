@@ -12,4 +12,8 @@
     <string name="time_picker_title">Time of crime:</string>
     <string name="crime_list_is_empty">Crime List is empty</string>
     <string name="add_crime">Add Crime</string>
+    <string name="delete_all">Delete All</string>
+    <string name="delete_items">Delete Items</string>
+    <string name="select_all">Select All</string>
+    <string name="unselect_all">Unselect All</string>
 </resources>
