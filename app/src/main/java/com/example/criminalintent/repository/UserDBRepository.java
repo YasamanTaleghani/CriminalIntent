@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.criminalintent.database.CrimeDBHelper;
 import com.example.criminalintent.database.UserDBSchema;
 import com.example.criminalintent.model.User;
-import static com.example.criminalintent.database.UserDBSchema.userTable.Cols;
+import static com.example.criminalintent.database.UserDBSchema.userTable.UserCols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +70,7 @@ public class UserDBRepository implements UsRepository{
 
     @Override
     public User getUser(UUID userId) {
-        String where = Cols.UUID + " = ?";
+        String where = UserCols.UUID + " = ?";
         String[] whereArgs = new String[]{userId.toString()};
 
         Cursor cursor = mDatabase.query(
@@ -117,17 +117,17 @@ public class UserDBRepository implements UsRepository{
     }
 
     private User getUserFromCursor(Cursor cursor) {
-        UUID uuid = UUID.fromString(cursor.getString(cursor.getColumnIndex(Cols.UUID)));
-        String userName = cursor.getString(cursor.getColumnIndex(Cols.USERNAME));
-        String passWord = cursor.getString(cursor.getColumnIndex(Cols.PASSWORD));
+        UUID uuid = UUID.fromString(cursor.getString(cursor.getColumnIndex(UserCols.UUID)));
+        String userName = cursor.getString(cursor.getColumnIndex(UserCols.USERNAME));
+        String passWord = cursor.getString(cursor.getColumnIndex(UserCols.PASSWORD));
         return new User(uuid,userName,passWord);
     }
 
     private ContentValues getContentValues(User user) {
         ContentValues values = new ContentValues();
-        values.put(Cols.UUID, user.getId().toString());
-        values.put(Cols.USERNAME , user.getUserName());
-        values.put(Cols.PASSWORD, user.getPassword());
+        values.put(UserCols.UUID, user.getId().toString());
+        values.put(UserCols.USERNAME , user.getUserName());
+        values.put(UserCols.PASSWORD, user.getPassword());
         return values;
     }
 }

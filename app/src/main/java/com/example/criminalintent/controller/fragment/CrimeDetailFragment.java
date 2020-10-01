@@ -4,7 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,19 +21,18 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.criminalintent.R;
-import com.example.criminalintent.controller.activity.CrimeDetailActivity;
 import com.example.criminalintent.model.Crime;
-import com.example.criminalintent.repository.CrimeRepository;
+import com.example.criminalintent.repository.CrimeDBRepository;
 import com.example.criminalintent.repository.IRepository;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -45,6 +47,7 @@ public class CrimeDetailFragment extends Fragment {
 
     public static final int REQUEST_CODE_DATE_PICKER = 0;
     public static final int REQUEST_CODE_HOUR_PICKER = 1;
+    private static final int REQUEST_CODE_SELECT_CONTACT = 2;
     public static final String FRAGMENT_TAG_DATE_PICKER = "DatePicker";
     public static final String FRAGMENT_TAG_HOUR_PICKER = "HourPicker";
 
@@ -56,6 +59,9 @@ public class CrimeDetailFragment extends Fragment {
     private Button mButtonLast;
     private Button mButtonPrevious;
     private Button mButtonFirst;
+
+    private Button mButtonSuspect;
+    private Button mButtonReport;
 
     private Crime mCrime;
     private Date mDate;
@@ -88,7 +94,7 @@ public class CrimeDetailFragment extends Fragment {
 
         Log.d(TAG, "onCreate");
 
-        mRepository = CrimeRepository.getInstance();
+        mRepository = CrimeDBRepository.getInstance(getActivity());
 
         //this is storage of this fragment
         UUID crimeId = (UUID) getArguments().getSerializable(ARGS_CRIME_ID);
@@ -113,8 +119,9 @@ public class CrimeDetailFragment extends Fragment {
             mButtonDate.setText(savedInstanceState.getString(BUNDLE_DATE));
         }
 
-        setListeners();
         initViews();
+        setListeners();
+
         return view;
     }
 
@@ -130,7 +137,7 @@ public class CrimeDetailFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.menu_item_remove:
 
-                CrimeRepository.getInstance().deleteCrime(mCrime);
+                CrimeDBRepository.getInstance(getActivity()).deleteCrime(mCrime);
                 getActivity().onBackPressed();
                 return true;
 
@@ -140,8 +147,8 @@ public class CrimeDetailFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onPause() {
+        super.onPause();
         updateCrime();
         Log.d(TAG, "onResume");
     }
@@ -156,14 +163,36 @@ public class CrimeDetailFragment extends Fragment {
                     (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_USER_SELECTED_DATE);
 
             updateCrimeDate(userSelectedDate);
-        }
-
-        if (requestCode == REQUEST_CODE_HOUR_PICKER) {
+        }else if (requestCode == REQUEST_CODE_HOUR_PICKER) {
             Date userSelectedDate =
                     (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_USER_SELECTED_DATE);
 
             updateCrimeDate(userSelectedDate);
+        } else if (requestCode == REQUEST_CODE_SELECT_CONTACT) {
+            Uri contactUri = data.getData();
+
+            String[] projection = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
+            Cursor cursor = getActivity().getContentResolver().query(
+                    contactUri,
+                    projection,
+                    null,
+                    null,
+                    null);
+
+            if (cursor == null || cursor.getCount() == 0)
+                return;
+
+            try {
+                cursor.moveToFirst();
+
+                String suspect = cursor.getString(0);
+                mCrime.setSuspect(suspect);
+                mButtonSuspect.setText(suspect);
+            } finally {
+                cursor.close();
+            }
         }
+
     }
 
     private void findViews(View view) {
@@ -175,6 +204,8 @@ public class CrimeDetailFragment extends Fragment {
         mButtonLast = view.findViewById(R.id.btn_last);
         mButtonNext = view.findViewById(R.id.btn_next);
         mButtonPrevious = view.findViewById(R.id.btn_previous);
+        mButtonSuspect = view.findViewById(R.id.choose_suspect);
+        mButtonReport = view.findViewById(R.id.send_report);
     }
 
     @SuppressLint("SetTextI18n")
@@ -192,6 +223,9 @@ public class CrimeDetailFragment extends Fragment {
         mCheckBoxSolved.setChecked(mCrime.isSolved());
         mButtonDate.setText(year + "/" + monthOfYear + "/" + dayOfMonth);
         mButtonHour.setText(hourOfDay + ":" + minutesOfDay + ":" + secondsOfDay);
+        if (mCrime.getSuspect()!= null){
+            mButtonSuspect.setText(mCrime.getSuspect());
+        }
     }
 
     private void setListeners() {
@@ -293,6 +327,21 @@ public class CrimeDetailFragment extends Fragment {
                 initViews();
             }
         });
+
+        mButtonSuspect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //selectContact();
+                shareText(getReport());
+            }
+        });
+
+        mButtonReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareReportIntent();
+            }
+        });
     }
 
     private void updateCrime() {
@@ -363,4 +412,62 @@ public class CrimeDetailFragment extends Fragment {
         mButtonDate.setText(year + "/" + monthOfYear + "/" + dayOfMonth);
     }
 
+    private String getReport() {
+        String title = mCrime.getTitle();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd-HH:mm:SS");
+        String dateString = simpleDateFormat.format(mCrime.getDate());
+
+        String solvedString = mCrime.isSolved() ?
+                getString(R.string.crime_report_solved) :
+                getString(R.string.crime_report_unsolved);
+
+        String suspectString = mCrime.getSuspect() == null ?
+                getString(R.string.crime_report_no_suspect) :
+                getString(R.string.crime_report_suspect, mCrime.getSuspect());
+
+        String report = getString(
+                R.string.crime_report,
+                title,
+                dateString,
+                solvedString,
+                suspectString);
+
+        return report;
+    }
+
+    private void shareReportIntent() {
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, getReport());
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+        sendIntent.setType("text/plain");
+
+        Intent shareIntent =
+                Intent.createChooser(sendIntent, getString(R.string.send_report));
+
+        //we prevent app from crash if the intent has no destination.
+        if (sendIntent.resolveActivity(getActivity().getPackageManager()) != null)
+            startActivity(shareIntent);
+    }
+
+    private void selectContact() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_CODE_SELECT_CONTACT);
+        }
+    }
+
+    private void shareText(String string){
+        String mimeType = "text/plain";
+
+        Intent shareIntent = ShareCompat.IntentBuilder.from(getActivity())
+                .setType(mimeType)
+                .setText(string)
+                .getIntent();
+        if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null){
+            startActivity(shareIntent);
+        }
+
+    }
 }

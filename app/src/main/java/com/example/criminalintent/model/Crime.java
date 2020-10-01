@@ -12,9 +12,18 @@ public class Crime {
     private Date mDate;
     private boolean mSolved;
     private boolean mChecked;
+    private String mSuspect;
 
     public boolean getChecked() {
         return mChecked;
+    }
+
+    public String getSuspect() {
+        return mSuspect;
+    }
+
+    public void setSuspect(String suspect) {
+        mSuspect = suspect;
     }
 
     public void setChecked(boolean checked) {
@@ -52,5 +61,13 @@ public class Crime {
     public Crime() {
         mId = UUID.randomUUID();
         mDate = DateUtils.randomDate();
+    }
+
+    public Crime(UUID id, String title, Date date, boolean solved, String suspect) {
+        mId = id;
+        mTitle = title;
+        mDate = date;
+        mSolved = solved;
+        mSuspect = suspect;
     }
 }

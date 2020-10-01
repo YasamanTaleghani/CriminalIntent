@@ -1,43 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_gravity="center"
     android:layout_margin="16dp"
+    android:orientation="vertical"
     tools:context=".controller.fragment.CrimeDetailFragment">
 
     <TextView
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_title_label"/>
+        android:text="@string/crime_title_label" />
+
     <EditText
         android:id="@+id/crime_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/crime_title_hint"/>
+        android:hint="@string/crime_title_hint" />
+
     <TextView
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_details_label"/>
+        android:text="@string/crime_details_label" />
+
     <Button
         android:id="@+id/crime_date"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/crime_hour"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <CheckBox
         android:id="@+id/crime_solved"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/crime_solved_label"/>
+        android:text="@string/crime_solved_label" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -56,9 +59,10 @@
             android:id="@+id/btn_previous"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:text="Previous"
-            android:textSize="12dp" />
+            android:textSize="11dp" />
 
         <Button
             android:id="@+id/btn_next"
@@ -77,5 +81,16 @@
             android:textSize="12dp" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/choose_suspect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/crime_suspect_text" />
+
+    <Button
+        android:id="@+id/send_report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/crime_report_text" />
 
 </LinearLayout>

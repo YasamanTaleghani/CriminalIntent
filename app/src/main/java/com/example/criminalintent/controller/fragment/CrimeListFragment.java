@@ -26,7 +26,7 @@ import com.example.criminalintent.R;
 import com.example.criminalintent.controller.activity.CrimeDetailActivity;
 import com.example.criminalintent.controller.activity.CrimePagerActivity;
 import com.example.criminalintent.model.Crime;
-import com.example.criminalintent.repository.CrimeRepository;
+import com.example.criminalintent.repository.CrimeDBRepository;
 import com.example.criminalintent.repository.IRepository;
 
 import java.util.List;
@@ -60,7 +60,7 @@ public class CrimeListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mRepository = CrimeRepository.getInstance();
+        mRepository = CrimeDBRepository.getInstance(getActivity());
         setHasOptionsMenu(true);
     }
 
