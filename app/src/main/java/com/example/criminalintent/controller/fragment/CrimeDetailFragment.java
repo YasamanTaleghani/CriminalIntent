@@ -187,6 +187,7 @@ public class CrimeDetailFragment extends Fragment {
                     null);
 
             try {
+
                 cursor.moveToFirst();
                 String name = cursor.getString(cursor.getColumnIndex(
                         ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
