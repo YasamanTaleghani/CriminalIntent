@@ -179,8 +179,6 @@ public class CrimeDetailFragment extends Fragment {
             updateCrimeDate(userSelectedDate);
         } else if (requestCode == REQUEST_CODE_SELECT_CONTACT) {
 
-
-
             Cursor cursor = getActivity().getContentResolver().query(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                     null,
@@ -382,6 +380,11 @@ public class CrimeDetailFragment extends Fragment {
         mButtonCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                ActivityCompat.requestPermissions(
+                        getActivity(),
+                        new String[]{Manifest.permission.CALL_PHONE},
+                        PackageManager.PERMISSION_GRANTED);
 
                 Intent intent = new Intent(
                         Intent.ACTION_CALL, Uri.parse("tel:" + mCrime.getPhoneNumber()));
