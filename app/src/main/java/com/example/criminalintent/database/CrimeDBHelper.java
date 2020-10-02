@@ -32,7 +32,8 @@ public class CrimeDBHelper extends SQLiteOpenHelper {
         sbQuery2.append(Cols.UUID + " TEXT NOT NULL,");
         sbQuery2.append(Cols.TITLE + " TEXT,");
         sbQuery2.append(Cols.DATE + " TEXT,");
-        sbQuery2.append(Cols.SUSPECT + " TEXT, ");
+        sbQuery2.append(Cols.SUSPECT + " TEXT,");
+        sbQuery2.append(Cols.PHONENUMBER + " TEXT,");
         sbQuery2.append(Cols.SOLVED + " INTEGER");
         sbQuery2.append(");");
 

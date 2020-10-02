@@ -29,6 +29,7 @@ import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeDBRepository;
 import com.example.criminalintent.repository.IRepository;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class CrimeListFragment extends Fragment {
@@ -100,15 +101,13 @@ public class CrimeListFragment extends Fragment {
 
                 int i=0;
                 while (i<mRepository.getCrimes().size()){
-                    if (mRepository.getCrimes().get(i).getChecked()){
-                        mRepository.deleteCrime(mRepository.getCrimes().get(i));
+                    Crime crime = mRepository.getCrimes().get(i);
+                    if (crime.getChecked()){
+                        CrimeDBRepository.getInstance(getActivity()).deleteCrime(crime);
                     } else {
                         i++;
                     }
                 }
-
-                Toast.makeText(getActivity(),
-                        "size is:" + mRepository.getCrimes().size(), Toast.LENGTH_SHORT).show();
                 updateUI();
 
                 return true;
@@ -213,15 +212,14 @@ public class CrimeListFragment extends Fragment {
                 }
             });
 
-            mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            mCheckBox.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (compoundButton.isChecked()){
+                public void onClick(View view) {
+                    if (mCheckBox.isChecked()){
                         mCrime.setChecked(true);
-                    } else {
+                    } else{
                         mCrime.setChecked(false);
                     }
-
                 }
             });
 
@@ -230,7 +228,9 @@ public class CrimeListFragment extends Fragment {
         public void bindCrime(Crime crime) {
             mCrime = crime;
             mTextViewTitle.setText(crime.getTitle());
-            mTextViewDate.setText(crime.getDate().toString());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            String string = simpleDateFormat.format(mCrime.getDate());
+            mTextViewDate.setText(string);
             mImageViewSolved.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
             mCheckBox.setChecked(mCrime.getChecked());
         }
@@ -276,6 +276,5 @@ public class CrimeListFragment extends Fragment {
             holder.bindCrime(crime);
         }
     }
-
 
 }

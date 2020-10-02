@@ -13,6 +13,15 @@ public class Crime {
     private boolean mSolved;
     private boolean mChecked;
     private String mSuspect;
+    private String mPhoneNumber;
+
+    public String getPhoneNumber() {
+        return mPhoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        mPhoneNumber = phoneNumber;
+    }
 
     public boolean getChecked() {
         return mChecked;
@@ -63,11 +72,12 @@ public class Crime {
         mDate = DateUtils.randomDate();
     }
 
-    public Crime(UUID id, String title, Date date, boolean solved, String suspect) {
+    public Crime(UUID id, String title, Date date, boolean solved, String suspect, String phoneNumber) {
         mId = id;
         mTitle = title;
         mDate = date;
         mSolved = solved;
         mSuspect = suspect;
+        mPhoneNumber = phoneNumber;
     }
 }
