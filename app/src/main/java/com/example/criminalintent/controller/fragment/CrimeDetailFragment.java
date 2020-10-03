@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
@@ -26,6 +27,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
@@ -158,6 +160,7 @@ public class CrimeDetailFragment extends Fragment {
         Log.d(TAG, "onResume");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null)
@@ -175,20 +178,10 @@ public class CrimeDetailFragment extends Fragment {
             updateCrimeDate(userSelectedDate);
         } else if (requestCode == REQUEST_CODE_SELECT_CONTACT) {
 
-            Cursor cursor = getActivity().getContentResolver().query(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null);
+            Uri contactUri = data.getData();
 
-            try {
-
-                cursor.moveToFirst();
-                String name = cursor.getString(cursor.getColumnIndex(
-                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                String phoneNumber = cursor.getString(cursor.getColumnIndex(
-                        ContactsContract.CommonDataKinds.Phone.NUMBER));
+            String name = retrieveContactName(contactUri);
+            String phoneNumber = retreiveContactNumber(contactUri);
 
                 mButtonSuspect.setText(name);
                 mCrime.setSuspect(name);
@@ -197,9 +190,6 @@ public class CrimeDetailFragment extends Fragment {
                 mButtonCall.setText("Call " + phoneNumber );
                 mButtonDial.setEnabled(true);
                 mButtonDial.setText("Dial " + phoneNumber);
-            } finally {
-                cursor.close();
-            }
 
         }
     }
@@ -503,8 +493,8 @@ public class CrimeDetailFragment extends Fragment {
                 new String[]{Manifest.permission.READ_CONTACTS},
                 PackageManager.PERMISSION_GRANTED);
 
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+        Intent intent = new Intent(Intent.ACTION_PICK,ContactsContract.Contacts.CONTENT_URI);
+        //intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_CODE_SELECT_CONTACT);
         }
@@ -530,5 +520,67 @@ public class CrimeDetailFragment extends Fragment {
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_SELECT_PHONE_NUMBER);
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private String retrieveContactName(Uri uri) {
+        Cursor cursor = getActivity().getContentResolver().query(
+                uri,
+                null,
+                null,
+                null,
+                null);
+        try {
+            cursor.moveToFirst();
+            return cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+        } finally {
+            cursor.close();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private String  retreiveContactNumber(Uri uri){
+
+        String contactID;
+        String phoneNumber;
+        Cursor cursorId = getActivity().getContentResolver().query(
+                uri,
+                new String[]{ContactsContract.Contacts._ID},
+                null,
+                null,
+                null,
+                null);
+
+        try {
+            cursorId.moveToFirst();
+            contactID = cursorId.getString(cursorId.getColumnIndex(ContactsContract.Contacts._ID));
+        } finally {
+            cursorId.close();
+        }
+
+        String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
+
+        String selection =
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ? AND " +
+                        ContactsContract.CommonDataKinds.Phone.TYPE + " = " +
+                        ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
+
+        Cursor cursorPhone = getActivity().getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                projection,
+                selection,
+                new String[]{contactID},
+                null
+        );
+
+        try {
+            cursorPhone.moveToFirst();
+            phoneNumber = cursorPhone.getString(
+                    cursorPhone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+        } finally {
+            cursorPhone.close();
+        }
+
+        return phoneNumber;
     }
 }
