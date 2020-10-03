@@ -1,19 +1,58 @@
 package com.example.criminalintent.model;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import com.example.criminalintent.utils.DateUtils;
 
 import java.util.Date;
 import java.util.UUID;
 
+@Entity(tableName = "crimeTable")
 public class Crime {
 
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    private Long primaryId;
+
+    @ColumnInfo(name = "uuid")
     private UUID mId;
+
+    @ColumnInfo(name = "title")
     private String mTitle;
+
+    @ColumnInfo(name = "date")
     private Date mDate;
+
+    @ColumnInfo(name = "solved")
     private boolean mSolved;
-    private boolean mChecked;
+
+    @ColumnInfo(name = "suspect")
     private String mSuspect;
+
+    @ColumnInfo(name = "phoneNumber")
     private String mPhoneNumber;
+
+    @Ignore
+    private boolean mChecked;
+
+    public Long getPrimaryId() {
+        return primaryId;
+    }
+
+    public void setPrimaryId(Long primaryId) {
+        this.primaryId = primaryId;
+    }
+
+    public void setId(UUID id) {
+        mId = id;
+    }
+
+    public boolean isChecked() {
+        return mChecked;
+    }
 
     public String getPhoneNumber() {
         return mPhoneNumber;
@@ -72,7 +111,8 @@ public class Crime {
         mDate = DateUtils.randomDate();
     }
 
-    public Crime(UUID id, String title, Date date, boolean solved, String suspect, String phoneNumber) {
+    public Crime(
+            UUID id, String title, Date date, boolean solved, String suspect, String phoneNumber) {
         mId = id;
         mTitle = title;
         mDate = date;

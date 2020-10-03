@@ -11,10 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +25,6 @@ import com.example.criminalintent.controller.activity.CrimeDetailActivity;
 import com.example.criminalintent.controller.activity.CrimePagerActivity;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeDBRepository;
-import com.example.criminalintent.repository.IRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -38,7 +35,7 @@ public class CrimeListFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private CrimeAdapter mCrimeAdapter;
-    private IRepository mRepository;
+    private CrimeDBRepository mRepository;
     private ImageView mImageViewEmpty;
     private TextView mTextViewEmpty;
     private Button mButtonAddNewCrime;
@@ -100,8 +97,8 @@ public class CrimeListFragment extends Fragment {
             case R.id.menu_btn_delete_selected:
 
                 int i=0;
-                while (i<mRepository.getCrimes().size()){
-                    Crime crime = mRepository.getCrimes().get(i);
+                while (i<mRepository.getEntities().size()){
+                    Crime crime = mRepository.getEntities().get(i);
                     if (crime.getChecked()){
                         CrimeDBRepository.getInstance(getActivity()).deleteCrime(crime);
                     } else {
@@ -113,15 +110,15 @@ public class CrimeListFragment extends Fragment {
                 return true;
 
             case R.id.menu_btn_select_all:
-                for (int j = 0; j < mRepository.getCrimes().size() ; j++) {
-                    mRepository.getCrimes().get(j).setChecked(true);
+                for (int j = 0; j < mRepository.getEntities().size() ; j++) {
+                    mRepository.getEntities().get(j).setChecked(true);
                 }
                 updateUI();
                 return true;
 
             case R.id.menu_btn_unselect_all:
-                for (int j = 0; j < mRepository.getCrimes().size() ; j++) {
-                    mRepository.getCrimes().get(j).setChecked(false);
+                for (int j = 0; j < mRepository.getEntities().size() ; j++) {
+                    mRepository.getEntities().get(j).setChecked(false);
                 }
                 updateUI();
                 return true;
@@ -156,7 +153,7 @@ public class CrimeListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Crime crime = new Crime();
-                mRepository.insertCrime(crime);
+                mRepository.insert(crime);
                 Intent intent = CrimeDetailActivity.newIntent(getContext(),crime.getId());
                 startActivity(intent);
             }
@@ -164,7 +161,7 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void updateUI() {
-        List<Crime> crimes = mRepository.getCrimes();
+        List<Crime> crimes = mRepository.getEntities();
 
         if (crimes.size()==0){
             mImageViewEmpty.setVisibility(View.VISIBLE);

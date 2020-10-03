@@ -82,7 +82,7 @@ public class SignUpFragment extends Fragment {
                     User user = new User(mEditTextUserName.getText().toString().trim(),
                             mEditTextPassword.getText().toString().trim());
 
-                    mUserDBRepository.insertUser(user);
+                    mUserDBRepository.insert(user);
 
                     setShownAnswerResult();
 

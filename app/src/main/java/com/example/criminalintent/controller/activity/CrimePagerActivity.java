@@ -17,7 +17,6 @@ import com.example.criminalintent.ZoomOutPageTransformer;
 import com.example.criminalintent.controller.fragment.CrimeDetailFragment;
 import com.example.criminalintent.model.Crime;
 import com.example.criminalintent.repository.CrimeDBRepository;
-import com.example.criminalintent.repository.IRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +25,7 @@ public class CrimePagerActivity extends AppCompatActivity {
 
     public static final String EXTRA_CRIME_ID = "com.example.criminalintent.crimeId";
     public static final String TAG = "CPA";
-    private IRepository mRepository;
+    private CrimeDBRepository mRepository;
     private UUID mCrimeId;
 
     private ViewPager2 mViewPagerCrimes;
@@ -56,7 +55,7 @@ public class CrimePagerActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        List<Crime> crimes = mRepository.getCrimes();
+        List<Crime> crimes = mRepository.getEntities();
         CrimePagerAdapter adapter = new CrimePagerAdapter(this, crimes);
         mViewPagerCrimes.setAdapter(adapter);
 

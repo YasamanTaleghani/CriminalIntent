@@ -90,7 +90,7 @@ public class LoginFragment extends Fragment {
                     User user = new User(mEditTextUserName.getText().toString().trim(),
                             mEditTextPassWord.getText().toString().trim());
 
-                    if (mUserDBRepository.searchUser(user)){
+                    if (mUserDBRepository.search(user)){
                         Intent intent = new Intent(getActivity(), CrimeListActivity.class);
                         intent.putExtra(
                                 EXTRA_USERNAME_LIST,mEditTextUserName.getText().toString());
